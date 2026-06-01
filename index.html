@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHANTOM | Engenharia de Eficiência Energética</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@700;800;900&display=swap');
+
+        :root {
+            --bordo: #ff1e56; /* Um vermelho/bordô mais vibrante e moderno */
+            --bordo-dark: #8a0022;
+            --fundo: #030305;
+            --fundo-card: rgba(18, 18, 24, 0.5); 
+            --texto-main: #ffffff;
+            --texto-sec: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --header-bg: rgba(3, 3, 5, 0.85);
+            --glow: 0 8px 32px rgba(255, 30, 86, 0.15);
+            --gradiente-primario: linear-gradient(135deg, #ff1e56, #8a0022);
+        }
+
+        [data-theme="light"] {
+            --bordo: #e6003d;
+            --bordo-dark: #800020;
+            --fundo: #f4f6f9;
+            --fundo-card: rgba(255, 255, 255, 0.7);
+            --texto-main: #0f172a;
+            --texto-sec: #475569;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --header-bg: rgba(244, 246, 249, 0.9);
+            --glow: 0 8px 32px rgba(230, 0, 61, 0.15);
+            --gradiente-primario: linear-gradient(135deg, #e6003d, #800020);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        body {
+            background-color: var(--fundo);
+            color: var(--texto-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(255, 30, 86, 0.04), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(255, 30, 86, 0.04), transparent 25%);
+            background-attachment: fixed;
+        }
+
+        /* Cursor Customizado */
+        @media (min-width: 769px) { body, a, button, input, label { cursor: none !important; } }
+        .custom-cursor {
+            width: 8px; height: 8px; background: var(--bordo); border-radius: 50%;
+            position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+            box-shadow: 0 0 10px var(--bordo);
+        }
+        .custom-cursor-follower {
+            width: 36px; height: 36px; border: 1px solid rgba(255, 30, 86, 0.4);
+            border-radius: 50%; position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 9998;
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        .custom-cursor.hovered { transform: scale(0.5); }
+        .custom-cursor-follower.hovered { 
+            width: 50px; height: 50px; background-color: rgba(255, 30, 86, 0.08); border-color: var(--bordo);
+        }
+
+        h1, h2, h3, h4, .nav-logo { font-family: 'Montserrat', sans-serif; }
+
+        /* Botão Tema */
+        #theme-toggle {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--fundo-card); color: var(--texto-main);
+            border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 2000; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer;
+        }
+        #theme-toggle:hover { border-color: var(--bordo); transform: translateY(-3px); }
+
+        /* Header */
+        header {
+            position: fixed; top: 0; width: 100%; padding: 20px 5%;
+            background: var(--header-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+        }
+        .nav-logo { font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; text-decoration: none; color: var(--texto-main); }
+        .nav-logo span { background: var(--gradiente-primario); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        nav { display: flex; gap: 35px; }
+        nav a {
+            color: var(--texto-sec); text-decoration: none; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            position: relative; padding: 5px 0; transition: color 0.3s;
+        }
+        nav a::after {
+            content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0;
+            background: var(--gradiente-primario); transition: width 0.3s ease;
+        }
+        nav a:hover { color: var(--texto-main); }
+        nav a:hover::after { width: 100%; }
+
+        .menu-toggle { display: none; flex-direction: column; justify-content: space-between; width: 26px; height: 18px; background: transparent; border: none; z-index: 1100; }
+        .menu-toggle span { width: 100%; height: 2px; background-color: var(--texto-main); transition: all 0.3s ease; }
+
+        /* Hero Sec */
+        .hero {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            padding: 0 20px; position: relative;
+        }
+        .hero h1 { font-size: clamp(3.5rem, 8vw, 7rem); margin-bottom: 20px; font-weight: 900; letter-spacing: -2px; }
+        .hero h1 span { background: var(--gradiente-primario); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { max-width: 650px; font-size: 1.15rem; color: var(--texto-sec); margin-bottom: 45px; font-weight: 400; }
+
+        .btn-glow {
+            display: inline-block; text-decoration: none; color: #fff; background: var(--gradiente-primario);
+            padding: 16px 36px; border-radius: 30px; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            border: none; box-shadow: var(--glow); transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn-glow:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(255, 30, 86, 0.4); }
+
+        /* Sections */
+        section { padding: 120px 5%; max-width: 1200px; margin: 0 auto; position: relative; }
+        .section-title { font-size: 2.2rem; margin-bottom: 60px; text-align: center; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .section-title span { color: var(--bordo); }
+
+        /* Cards Elegantes */
+        .glass-card {
+            background: linear-gradient(145deg, var(--fundo-card), rgba(255, 255, 255, 0.01));
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color); border-radius: 16px; padding: 45px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .glass-card:hover { transform: translateY(-8px); border-color: rgba(255, 30, 86, 0.3); box-shadow: var(--glow); }
+
+        /* Textos */
+        .project-description h3 { color: var(--texto-main); margin-bottom: 18px; font-size: 1.4rem; display: flex; align-items: center; gap: 12px; margin-top: 35px; }
+        .project-description h3:first-child { margin-top: 0; }
+        .project-description h3::before { content: ''; display: block; width: 8px; height: 8px; background: var(--bordo); border-radius: 50%; box-shadow: 0 0 10px var(--bordo); }
+        .project-description p { margin-bottom: 20px; font-size: 1.05rem; color: var(--texto-sec); }
+        .project-description ul { margin-left: 20px; color: var(--texto-sec); list-style: none; }
+        .project-description li { margin-bottom: 12px; font-size: 1.05rem; position: relative; padding-left: 20px; }
+        .project-description li::before { content: '→'; position: absolute; left: 0; color: var(--bordo); font-weight: bold; }
+        .project-description strong { color: var(--texto-main); font-weight: 700; }
+
+        /* Mapa Mental Moderno */
+        .scrum-intro { max-width: 750px; margin: 0 auto 60px; text-align: center; color: var(--texto-sec); font-size: 1.05rem; }
+        .mindmap-container { display: flex; flex-direction: column; align-items: center; gap: 50px; }
+        
+        .node-core { background: var(--gradiente-primario); padding: 20px 45px; text-align: center; border-radius: 12px; color: white; box-shadow: var(--glow); position: relative; z-index: 2; }
+        .node-core span { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; opacity: 0.9; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        .node-core h3 { font-size: 1.4rem; font-weight: 800; margin: 0; }
+
+        .mindmap-branches { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 100%; position: relative; }
+        .branch-header { font-size: 1.15rem; font-weight: 800; color: var(--texto-main); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid rgba(255, 255, 255, 0.05); }
+        .branch-content { display: flex; flex-direction: column; gap: 15px; }
+        .sub-node { font-size: 0.95rem; color: var(--texto-sec); padding: 12px; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 3px solid var(--bordo); transition: 0.3s; }
+        .sub-node:hover { background: rgba(255,30,86,0.05); transform: translateX(5px); }
+        .sub-node strong { color: var(--texto-main); display: block; margin-bottom: 4px; }
+
+        /* Simulador - Toggle Switches Customizados */
+        .calc-container { max-width: 650px; margin: 0 auto; }
+        .calc-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--border-color); }
+        .calc-item label { color: var(--texto-main); font-size: 1.05rem; font-weight: 500; }
+        
+        .toggle-switch {
+            position: relative; width: 50px; height: 26px; appearance: none; -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1); border-radius: 20px; outline: none; cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+            background: #fff; border-radius: 50%; transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .toggle-switch:checked { background: var(--bordo); box-shadow: 0 0 15px rgba(255, 30, 86, 0.4); }
+        .toggle-switch:checked::after { transform: translateX(24px); }
+
+        .result-box { margin-top: 40px; text-align: center; padding: 35px; border-radius: 16px; background: rgba(255, 30, 86, 0.04); border: 1px solid rgba(255, 30, 86, 0.2); }
+        .result-value { font-size: 3rem; font-weight: 900; color: var(--bordo); display: block; margin: 15px 0; letter-spacing: -1px; text-shadow: 0 4px 20px rgba(255,30,86,0.2); }
+
+        /* Equipe - 4 Elementos Lado a Lado */
+        .team-container { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+        }
+        .member-box { text-align: center; padding: 40px 25px; display: flex; flex-direction: column; justify-content: space-between; align-items: center;}
+        .member-box h4 { font-size: 1.15rem; margin-bottom: 8px; font-weight: 800; }
+        .member-box .role { display: inline-block; color: var(--bordo); font-size: 0.75rem; font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .member-box p { font-size: 0.9rem; color: var(--texto-sec); line-height: 1.6; margin-bottom: 25px; }
+        
+        .linkedin-btn {
+            display: inline-block; text-decoration: none; color: var(--texto-main); border: 1px solid var(--border-color); padding: 10px 24px; font-size: 0.8rem; font-weight: 600; border-radius: 30px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .linkedin-btn:hover { background: var(--bordo); border-color: var(--bordo); color: white; box-shadow: 0 4px 15px rgba(255,30,86,0.3); }
+
+        footer { padding: 50px 20px; text-align: center; background: var(--header-bg); border-top: 1px solid var(--border-color); backdrop-filter: blur(10px); }
+        footer p { font-size: 0.9rem; color: var(--texto-sec); }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .team-container { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .custom-cursor, .custom-cursor-follower { display: none !important; }
+            .menu-toggle { display: flex; }
+            nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100vh; background: var(--header-bg); border-left: 1px solid var(--border-color); flex-direction: column; justify-content: center; align-items: center; gap: 35px; transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1); }
+            nav.active { right: 0; }
+            .menu-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); background-color: var(--bordo); }
+            .menu-toggle.active span:nth-child(2) { opacity: 0; }
+            .menu-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); background-color: var(--bordo); }
+            .team-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-follower"></div>
+
+    <button id="theme-toggle" title="Alternar Interface">🌓</button>
+
+    <header>
+        <a href="#" class="nav-logo">PHAN<span>TOM</span></a>
+        
+        <button id="menu-toggle" class="menu-toggle" aria-label="Abrir Menu">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav id="nav-menu">
+            <a href="#sobre">Projeto</a>
+            <a href="#scrum">Metodologia</a>
+            <a href="#calculadora">Simulador</a>
+            <a href="#equipe">Time</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>PHAN<span>TOM</span></h1>
+        <p>Sistema autônomo baseado em inteligência IoT focado no extermínio do desperdício de energia em modo standby.</p>
+        <a href="#sobre" class="btn-glow">Iniciar Análise</a>
+    </section>
+
+    <section id="sobre">
+        <h2 class="section-title">Engenharia do <span>Projeto</span></h2>
+        <div class="project-description glass-card">
+            <h3>Anatomia do Problema</h3>
+            <p>O PHANTOM surge como resposta tecnológica a um gargalo financeiro e ambiental silencioso: a <strong>Energia Fantasma</strong>. Equipamentos operando em modo de espera (standby) mantêm transformadores internos ativos, gerando um dreno constante que representa até 12% da demanda elétrica de uma residência.</p>
+            
+            <h3>A Solução Autônoma</h3>
+            <p>Desenvolvemos uma arquitetura IoT focada em eficiência passiva. Operando na borda, o sistema cruza variáveis elétricas e ambientais para executar cortes de energia precisos, sem exigir interação humana:</p>
+            <ul>
+                <li><strong>Sensoriamento Real:</strong> Mapeamento da curva de corrente para detecção precisa da assinatura de standby.</li>
+                <li><strong>Validação de Presença:</strong> Sensores infravermelhos confirmam a ociosidade do ambiente antes de qualquer ação.</li>
+                <li><strong>Corte Físico:</strong> Um relé isola mecanicamente a passagem elétrica da tomada, aumentando o consumo a zero absoluto.</li>
+            </ul>
+
+            <h3>Impacto Prático</h3>
+            <p>Ao eliminar o consumo residual passivo, o circuito evita o estresse térmico constante nos componentes internos dos aparelhos, ampliando sua durabilidade e gerando economia real e direta.</p>
+        </div>
+    </section>
+
+    <section id="scrum">
+        <h2 class="section-title">Metodologia <span>Scrum</span></h2>
+        <p class="scrum-intro">A governança e fluxo de trabalho do grupo foram organizados usando práticas ágeis. Abaixo, o funcionamento do nosso ecossistema de desenvolvimento:</p>
+        
+        <div class="mindmap-container">
+            <div class="node-core">
+                <span>Estrutura Base</span>
+                <h3>Framework Scrum</h3>
+            </div>
+            
+            <div class="mindmap-branches">
+                <div class="glass-card">
+                    <div class="branch-header">Eventos Ágeis</div>
+                    <div class="branch-content">
+                        <div class="sub-node"><strong>Sprints</strong> Ciclos de entregas rápidos focados na evolução constante do hardware.</div>
+                        <div class="sub-node"><strong>Alinhamentos Diários</strong> Sincronização de tarefas e resolução de bloqueios.</div>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="branch-header">Artefatos</div>
+                    <div class="branch-content">
+                        <div class="sub-node"><strong>Backlog do Produto</strong> Lista de requisitos e funções priorizados.</div>
+                        <div class="sub-node"><strong>Incremento Prático</strong> Protótipo físico funcional aprimorado a cada ciclo.</div>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="branch-header">Papéis e Time</div>
+                    <div class="branch-content">
+                        <div class="sub-node"><strong>Product Owner</strong> Gerencia a visão dos requisitos e negócios.</div>
+                        <div class="sub-node"><strong>Scrum Master</strong> Facilita processos ágeis e prazos.</div>
+                        <div class="sub-node"><strong>Time de Desenvolvimento</strong> Execução prática da engenharia.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="calculadora">
+        <h2 class="section-title">Simulador de <span>Desperdício</span></h2>
+        <div class="calc-container glass-card">
+            <p style="text-align:center; margin-bottom:30px; color:var(--texto-sec); font-size: 1.05rem;">Ative as cargas elétricas para simular o dreno financeiro na sua residência:</p>
+            
+            <div class="calc-item">
+                <label>Decodificador de TV (15W)</label>
+                <input type="checkbox" class="device toggle-switch" data-watts="15">
+            </div>
+            <div class="calc-item">
+                <label>Micro-ondas (3W)</label>
+                <input type="checkbox" class="device toggle-switch" data-watts="3">
+            </div>
+            <div class="calc-item">
+                <label>Console de Videogame (8.5W)</label>
+                <input type="checkbox" class="device toggle-switch" data-watts="8.5">
+            </div>
+            <div class="calc-item">
+                <label>Smart TV LED (1.5W)</label>
+                <input type="checkbox" class="device toggle-switch" data-watts="1.5">
+            </div>
+            <div class="calc-item">
+                <label>Desktop + Monitor (2W)</label>
+                <input type="checkbox" class="device toggle-switch" data-watts="2">
+            </div>
+
+            <div class="result-box">
+                <p style="color:var(--texto-sec); font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Recuperação Financeira Anual</p>
+                <span class="result-value" id="total-savings">R$ 0,00</span>
+                <p style="font-size:0.85rem; color:var(--texto-sec);">*Modelo matemático calibrado com tarifa média de R$ 0,92/kWh.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="equipe">
+        <h2 class="section-title">Nossa <span>Equipe</span></h2>
+        <div class="team-container">
+            <div class="member-box glass-card">
+                <h4>Robson Oliveira</h4>
+                <span class="role">Product Owner</span>
+                <p>Gerência de requisitos, lógica do microcontrolador e documentação.</p>
+                <a href="https://www.linkedin.com/in/robson-oliveira-555812403" target="_blank" class="linkedin-btn">Conhecer Integrante</a>
+            </div>
+
+            <div class="member-box glass-card">
+                <h4>Derick Santos</h4>
+                <span class="role">Scrum Master</span>
+                <p>Aplicação da metodologia ágil, organização e apoio à documentação.</p>
+                <a href="https://www.linkedin.com/in/derick-aquino-5385903b2" target="_blank" class="linkedin-btn">Conhecer Integrante</a>
+            </div>
+
+            <div class="member-box glass-card">
+                <h4>Davi Cabral</h4>
+                <span class="role">Desenvolvedor</span>
+                <p>Desenvolvimento do circuito, testes em bancada e calibração de sensores.</p>
+                <a href="https://www.linkedin.com/in/davi-ferreira-cabral-b8ba57406/" target="_blank" class="linkedin-btn">Conhecer Integrante</a>
+            </div>
+
+            <div class="member-box glass-card">
+                <h4>José Henrique</h4>
+                <span class="role">Desenvolvedor</span>
+                <p>Levantamento orçamentário e análise de viabilidade econômica.</p>
+                <a href="https://www.linkedin.com/in/josé-henrique-de-assis-araújo-298283406" target="_blank" class="linkedin-btn">Conhecer Integrante</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p class="nav-logo" style="margin-bottom: 15px;">PHAN<span>TOM</span></p>
+        <p>Projeto de Engenharia IoT - FECEAP 2026</p>
+    </footer>
+
+    <script>
+        // Menu Mobile
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const navLinks = document.querySelectorAll('nav a');
+
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Cursor Magnético
+        const cursorDot = document.querySelector('.custom-cursor');
+        const cursorRing = document.querySelector('.custom-cursor-follower');
+        let mouseX = 0, mouseY = 0, dotX = 0, dotY = 0, ringX = 0, ringY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            dotX += (mouseX - dotX) * 0.2;
+            dotY += (mouseY - dotY) * 0.2;
+            ringX += (mouseX - ringX) * 0.1;
+            ringY += (mouseY - ringY) * 0.1;
+
+            cursorDot.style.transform = `translate3d(${dotX - 4}px, ${dotY - 4}px, 0)`;
+            cursorRing.style.transform = `translate3d(${ringX - 18}px, ${ringY - 18}px, 0)`;
+
+            requestAnimationFrame(animateCursor);
+        }
+        requestAnimationFrame(animateCursor);
+
+        // Hover em botões
+        const interactives = document.querySelectorAll('a, button, input, label, .menu-toggle');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorDot.classList.add('hovered'); cursorRing.classList.add('hovered');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorDot.classList.remove('hovered'); cursorRing.classList.remove('hovered');
+            });
+        });
+
+        // Troca de Tema
+        const themeBtn = document.getElementById('theme-toggle');
+        themeBtn.addEventListener('click', () => {
+            const current = document.body.getAttribute('data-theme');
+            document.body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        });
+
+        // Calculadora de Economia
+        const devices = document.querySelectorAll('.device');
+        const display = document.getElementById('total-savings');
+
+        function updateCalc() {
+            let totalWatts = 0;
+            devices.forEach(d => { if(d.checked) totalWatts += parseFloat(d.dataset.watts); });
+            const savings = (totalWatts * 24 * 365 / 1000) * 0.92;
+            display.innerText = `R$ ${savings.toFixed(2).replace('.', ',')}`;
+        }
+        devices.forEach(d => d.addEventListener('change', updateCalc));
+    </script>
+</body>
+</html>
+body {
+  font-family: system-ui;
+  background: #f06d06;
+  color: white;
+  text-align: center;
+}document.getElementsByTagName("h1")[0].style.fontSize = "6vw";
